@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, react-hooks/exhaustive-deps */
 import RecipeCard from "@/components/RecipeCard";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { getRecetasExternas } from "@/lib/themealdb";

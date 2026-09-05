@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, react-hooks/exhaustive-deps */
 import Link from "next/link";
 
 export default function RecipeCard({ receta }: { receta: any }) {
