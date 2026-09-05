@@ -50,9 +50,9 @@ export default async function HomePage() {
           </p>
         </header>
 
-        {/* Sección Supabase */}
+        {/* Sección Comunidad */}
         <section className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-800">Recetas de la Comunidad (Supabase)</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Recetas de la Comunidad</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {recetas && recetas.length > 0 ? (
@@ -76,7 +76,7 @@ export default async function HomePage() {
                     </p>
                   </div>
 
-                  {/* Solo botón Ver Receta */}
+                  {/* Botón Ver Receta */}
                   <div className="p-2 pt-0">
                     <Link
                       href={`/recetas/${receta.id}`}
@@ -94,9 +94,9 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Sección API Externa */}
+        {/* Sección Recomendados */}
         <section className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-800">Postres Recomendados (TheMealDB API)</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Postres Recomendados</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {postresAPI.map((postre: any) => (
               <div key={postre.idMeal} className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 p-2">
