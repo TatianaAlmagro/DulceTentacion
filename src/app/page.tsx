@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,14 @@ export default async function HomePage() {
       },
     }
   );
+
+  // Validar si el usuario está autenticado
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Si no ha iniciado sesión, redirigir a la pantalla de login
+  if (!user) {
+    redirect("/login");
+  }
 
   // Cargar recetas desde Supabase
   const { data: recetas } = await supabase
