@@ -76,27 +76,13 @@ export default async function HomePage() {
                     </p>
                   </div>
 
-                  {/* Botones estilo pill (redondeados) */}
-                  <div className="p-2 pt-0 flex gap-2">
+                  {/* Solo botón Ver Receta */}
+                  <div className="p-2 pt-0">
                     <Link
                       href={`/recetas/${receta.id}`}
-                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-full text-center text-sm transition"
+                      className="block w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 rounded-full text-center text-sm transition"
                     >
-                      Ver
-                    </Link>
-
-                    <Link
-                      href={`/recetas/${receta.id}/editar`}
-                      className="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-600 font-semibold py-2.5 rounded-full text-center text-sm transition"
-                    >
-                      Editar
-                    </Link>
-
-                    <Link
-                      href="/dashboard"
-                      className="flex-1 bg-red-100 hover:bg-red-200 text-red-600 font-semibold py-2.5 rounded-full text-center text-sm transition"
-                    >
-                      Eliminar
+                      Ver receta
                     </Link>
                   </div>
 
