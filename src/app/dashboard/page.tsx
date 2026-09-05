@@ -37,124 +37,92 @@ export default function DashboardPage() {
     const { data, error } = await supabase
       .from("recetas")
       .select("*")
-      .eq("usuario_id", user.id)
       .order("created_at", { ascending: false });
 
-    if (!error && data) {
-      setRecetas(data);
+    if (error) {
+      console.error("Error al cargar recetas:", error.message);
+    } else {
+      setRecetas(data || []);
     }
     setLoading(false);
+  };
+
+  const eliminarReceta = async (id: string) => {
+    const confirmacion = confirm("¿Estás seguro de que deseas eliminar esta receta?");
+    if (!confirmacion) return;
+
+    const { error } = await supabase
+      .from("recetas")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      alert("Error al eliminar la receta: " + error.message);
+    } else {
+      setRecetas((prev) => prev.filter((r) => r.id !== id));
+    }
   };
 
   useEffect(() => {
     cargarDatos();
   }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  };
-
-  const handleEliminar = async (id: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (confirm("¿Estás seguro de que deseas eliminar esta receta?")) {
-      const { error } = await supabase.from("recetas").delete().eq("id", id);
-      if (error) {
-        alert("Error al eliminar la receta: " + error.message);
-      } else {
-        setRecetas(recetas.filter((r) => r.id !== id));
-      }
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-pink-50">
+        <p className="text-pink-600 font-semibold">Cargando recetas...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Encabezado del Dashboard */}
-      <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-md border mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-pink-600">Panel Principal</h1>
-          <p className="text-gray-600 text-sm mt-1">
-            Sesión iniciada como: <span className="font-semibold">{userEmail}</span>
-          </p>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition"
-        >
-          Cerrar Sesión
-        </button>
-      </div>
-
-      {/* Sección principal de Recetas */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-pink-50/50 p-6 rounded-xl border border-pink-100 flex flex-col justify-between">
+    <main className="min-h-screen bg-pink-50/30 p-6 md:p-10">
+      <div className="max-w-6xl mx-auto">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xl font-bold text-pink-700">🍰 Tus Recetas</h2>
-              <span className="bg-pink-200 text-pink-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                Rol: Chef
-              </span>
-            </div>
-            <p className="text-gray-600 text-sm mb-4">
-              Aquí podrás crear, editar y gestionar tus publicaciones de repostería.
-            </p>
+            <h1 className="text-3xl font-bold text-gray-800">Panel de Administración</h1>
+            {userEmail && <p className="text-sm text-gray-600">Sesión iniciada como: {userEmail}</p>}
           </div>
-          <Link
-            href="/recetas/nueva"
-            className="inline-block text-center bg-pink-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-pink-700 transition"
-          >
-            + Crear Nueva Receta
-          </Link>
-        </div>
 
-        <div className="bg-amber-50/50 p-6 rounded-xl border border-amber-100 flex flex-col justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-amber-700 mb-2">⭐ Recetas Favoritas</h2>
-            <p className="text-gray-600 text-sm mb-4">
-              Explora las recetas internacionales traídas directamente desde la API externa.
-            </p>
+          <Link
+            href="/dashboard/nuevo"
+            className="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition"
+          >
+            + Nueva Receta
+          </Link>
+        </header>
+
+        {recetas.length === 0 ? (
+          <div className="bg-white p-8 rounded-xl shadow-sm text-center">
+            <p className="text-gray-500">No hay recetas registradas todavía.</p>
           </div>
-          <Link
-            href="/explorar"
-            className="inline-block text-center bg-amber-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-amber-600 transition"
-          >
-            Explorar Recetas Globales
-          </Link>
-        </div>
-      </div>
-
-      {/* Lista de Recetas Creadas */}
-      <div className="mt-8 bg-white p-6 rounded-xl shadow-md border">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Tus Publicaciones</h3>
-
-        {loading ? (
-          <p className="text-gray-500">Cargando recetas...</p>
-        ) : recetas.length === 0 ? (
-          <p className="text-gray-500">Aún no has creado ninguna receta.</p>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recetas.map((receta) => (
-              <div
-                key={receta.id}
-                className="p-4 border rounded-lg hover:bg-pink-50/50 hover:border-pink-300 transition flex justify-between items-center"
-              >
-                <Link href={`/recetas/${receta.id}`} className="flex-1 cursor-pointer">
-                  <h4 className="font-bold text-lg text-pink-600">{receta.titulo}</h4>
-                  <p className="text-gray-600 text-sm mt-1">{receta.descripcion}</p>
-                </Link>
-                <div className="flex gap-2 ml-4">
+              <div key={receta.id} className="bg-white p-5 rounded-xl shadow-sm border border-pink-100 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-bold text-xl text-gray-800 mb-2">{receta.titulo}</h3>
+                  <p className="text-gray-600 text-sm line-clamp-3">{receta.descripcion}</p>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-gray-100 flex gap-2">
+                  <Link
+                    href={`/recetas/${receta.id}`}
+                    className="flex-1 bg-pink-500 hover:bg-pink-600 text-white text-xs font-semibold py-2 rounded text-center transition"
+                  >
+                    Ver
+                  </Link>
+
                   <Link
                     href={`/recetas/${receta.id}/editar`}
-                    className="px-3 py-1 bg-amber-100 text-amber-700 text-sm font-medium rounded hover:bg-amber-200 transition"
+                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-2 rounded text-center transition"
                   >
                     Editar
                   </Link>
+
                   <button
-                    onClick={(e) => handleEliminar(receta.id, e)}
-                    className="px-3 py-1 bg-gray-100 text-red-600 text-sm font-medium rounded hover:bg-red-50 transition"
+                    onClick={() => eliminarReceta(receta.id)}
+                    className="flex-1 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold py-2 rounded text-center transition"
                   >
                     Eliminar
                   </button>
@@ -164,6 +132,6 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }
